@@ -11,6 +11,7 @@ jobs:
           U: ${{ secrets.FTP_USERNAME }}
           P: ${{ secrets.FTP_PASSWORD }}
         run: |
-          for d in "" "sea/" "public_html/" "domains/" "domains/marcomarciano.com/" "domains/marcomarciano.com/public_html/"; do
-            echo "=== /$d"; curl -s --ssl-reqd -k --list-only --user "$U:$P" "ftp://$H/$d" || echo "(none)"
+          echo "=== PWD"; curl -s --ssl-reqd -k -v --user "$U:$P" "ftp://$H/" -Q "PWD" --list-only 2>&1 | grep -E "^< 257" || true
+          for d in "%2F" "%2Fsea/" "%2Fpublic_html/"; do
+            echo "=== $d"; curl -s --ssl-reqd -k --list-only --user "$U:$P" "ftp://$H/$d" || echo "(none)"
           done
