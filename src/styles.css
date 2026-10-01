@@ -1,0 +1,231 @@
+:root {
+  --ink: #f9f9f9;
+  /* Interface ink: white on colour, soft charcoal on the white membrane (set by Instrument). */
+  --ui-ink: rgb(34, 34, 38);
+  --ui-halo: rgba(0, 0, 0, 0);
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+body {
+  position: fixed;
+  inset: 0;
+  overscroll-behavior: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+.sea {
+  position: fixed;
+  inset: 0;
+}
+
+/* ------------------------------------------------------------- surface */
+
+.surface {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  /*
+   * A small soft ring rather than an arrow: you are pointing at a material, not a document.
+   * White over a soft dark halo, so it reads on the white membrane and on every colour.
+   */
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='12' cy='12' r='5.5' fill='none' stroke='black' stroke-opacity='.38' stroke-width='3'/%3E%3Ccircle cx='12' cy='12' r='5.5' fill='none' stroke='white' stroke-opacity='.95' stroke-width='1.25'/%3E%3C/svg%3E")
+      12 12,
+    crosshair;
+}
+
+/* While pressing, the ring tightens slightly — it stays visible above the dent. */
+.surface.is-pressing {
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='12' cy='12' r='4' fill='none' stroke='black' stroke-opacity='.38' stroke-width='3'/%3E%3Ccircle cx='12' cy='12' r='4' fill='none' stroke='white' stroke-opacity='.95' stroke-width='1.25'/%3E%3C/svg%3E")
+      12 12,
+    crosshair;
+}
+
+.surface canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.8s var(--ease);
+}
+
+.surface canvas.is-revealed {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------- controls */
+
+.controls {
+  position: absolute;
+  top: max(10px, env(safe-area-inset-top));
+  right: max(14px, env(safe-area-inset-right));
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--ui-ink);
+  opacity: 0.8;
+  filter: drop-shadow(0 0 8px var(--ui-halo));
+  transition: color 0.6s var(--ease);
+  touch-action: none;
+}
+
+.volume {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* ------------------------------------------------------------- toggles (grid, music mode) */
+
+.toggle {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.toggle svg {
+  overflow: visible;
+}
+
+.toggle__disc {
+  fill: currentColor;
+  opacity: 0;
+  transform: scale(0.7);
+  transform-origin: 12px 12px;
+  transition:
+    opacity 0.35s var(--ease),
+    transform 0.45s var(--ease);
+}
+
+.toggle__off {
+  fill: currentColor;
+  opacity: 1;
+  transition: opacity 0.35s var(--ease);
+}
+
+.toggle.is-active .toggle__disc {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.toggle.is-active .toggle__off {
+  opacity: 0;
+}
+
+.toggle:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
+
+.toggle:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.volume__glyph {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.volume__glyph svg {
+  fill: currentColor;
+}
+
+.volume__wave {
+  transition: opacity 0.35s var(--ease);
+}
+
+.volume__track {
+  position: relative;
+  width: 76px;
+  height: 44px;
+  margin-right: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.volume__rail {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  margin-top: -0.75px;
+  border-radius: 1px;
+  background: color-mix(in srgb, currentColor 40%, transparent);
+  overflow: hidden;
+}
+
+.volume__fill {
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  transform-origin: left center;
+}
+
+.volume__knob {
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: currentColor;
+  transition: transform 0.25s var(--ease);
+}
+
+.volume__track:active .volume__knob {
+  transform: scale(1.35);
+}
+
+.volume__glyph:focus-visible,
+.volume__track:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
+
+.volume__glyph:focus:not(:focus-visible),
+.volume__track:focus:not(:focus-visible) {
+  outline: none;
+}
